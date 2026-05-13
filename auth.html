@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Lưu bút</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="auth-wrapper">
+    <div class="welcome-text">
+        <p>Chào mừng bạn đến với thế giới kỷ niệm...</p>
+    </div>
+
+
+    
+    <div class="notebook">
+        <h2>🔑 Đăng nhập / Đăng ký</h2>
+        <input type="email" id="email" placeholder="Email của bạn">
+        <input type="password" id="pass" placeholder="Mật khẩu">
+        <button onclick="signUp()">Đăng ký</button>
+        <button onclick="login()">Đăng nhập</button>
+    </div>
+
+    <div class="decor-image">
+        <img src="https://bqn.1cdn.vn/2022/05/24/images.baoquangnam.vn-storage-newsportal-2022-5-23-127452-_2022-05-24_172611.png" style="width: 150px; border-radius: 10px;">
+    </div>
+
+    <div class="footer-text">
+        <p>Lưu giữ những ngày xanh 🌿</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function signUp() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            auth.createUserWithEmailAndPassword(e, p)
+                .then(() => { alert("Đã đăng ký! Đang chuyển hướng..."); window.location.href="dashboard.html"; })
+                .catch(err => alert(err.message));
+        }
+
+        function login() {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            auth.signInWithEmailAndPassword(e, p)
+                .then(() => { window.location.href="dashboard.html"; })
+                .catch(err => alert(err.message));
+        }
+    </script>
+</body>
+</html>

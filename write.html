@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Gửi lời nhắn - Ngày Xanh</title>
+    <style>
+        /* 1. CSS CÁC MÀU NỀN LOANG (Gradient) */
+        body { 
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            transition: 0.5s; /* Hiệu ứng chuyển màu mượt */
+            min-height: 100vh;
+        }
+        .bg-gradient-1 { background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%) !important; }
+        .bg-gradient-2 { background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%) !important; }
+        .bg-gradient-3 { background: linear-gradient(135deg, #e8f5e9 0%, #e1f5fe 100%) !important; }
+        .bg-gradient-4 { background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%) !important; }
+
+        /* Style giao diện */
+        .write-container { display: flex; gap: 30px; max-width: 1000px; margin: 0 auto; padding: 40px 20px; align-items: flex-start; flex-wrap: wrap; }
+        .image-upload-section { flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .form-section { flex: 1.5; min-width: 350px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-left: 8px solid #2d5a27; }
+        .preview-box { width: 100%; height: 350px; border: 3px dashed #e0e0e0; border-radius: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #fcfcfc; position: relative; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .question-item { margin-bottom: 20px; }
+        .question-item label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
+        .question-item input, .question-item textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; box-sizing: border-box; }
+        textarea { height: 100px; resize: none; }
+    </style>
+</head>
+<body>
+
+    <div class="write-container">
+        <div class="image-upload-section">
+            <h3 style="color: #2d5a27;">📸 Hình ảnh tuyệt nhất của chúng ta</h3>
+            <div class="preview-box" onclick="document.getElementById('guest-photo').click()">
+                <span id="txt-prompt">Bấm để tải ảnh...</span>
+                <img id="img-preview" src="" style="display:none;">
+            </div>
+            <input type="file" id="guest-photo" accept="image/*" style="display: none;" onchange="handlePreview(event)">
+        </div>
+
+        <div class="form-section">
+            <h2 id="template-title" style="color: #2d5a27; text-align: center;">🌿 Đang tải thiết kế...</h2>
+            
+            <div id="dynamic-questions">
+                <div class="question-item">
+                    <label>Tên của bạn:</label>
+                    <input type="text" id="guest-name" placeholder="Nhập tên bạn nhé...">
+                </div>
+            </div>
+            
+            <button onclick="sendLetter()" id="btn-send" style="width: 100%; padding: 15px; background: #2d5a27; color: white; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; margin-top: 20px; font-weight: bold;">📮 Gửi thư đi</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const urlParams = new URLSearchParams(window.location.search);
+        const tid = urlParams.get('tid');
+
+        let ownerID = ""; 
+        let customFields = [];
+
+        async function loadTemplate() {
+            if(!tid) return alert("Thiếu ID bảng thiết kế trong link!");
+            
+            try {
+                const doc = await db.collection("user_templates").doc(tid).get();
+                if(!doc.exists) {
+                    alert("Bảng lưu bút này không tồn tại!");
+                    return;
+                }
+                
+                const data = doc.data();
+                ownerID = data.ownerID; 
+                customFields = data.customFields || [];
+
+                // --- 2. LOGIC CẬP NHẬT MÀU NỀN ---
+                if (data.backgroundClass) {
+                    document.body.className = data.backgroundClass;
+                } else {
+                    document.body.className = 'bg-gradient-1'; // Màu mặc định nếu không có
+                }
+                // --------------------------------
+
+                document.getElementById('template-title').innerText = "🌿 " + data.title;
+
+                const container = document.getElementById('dynamic-questions');
+                customFields.forEach((q) => {
+                    const div = document.createElement('div');
+                    div.className = 'question-item';
+                    div.innerHTML = `<label>${q}:</label><textarea class="ans-field" placeholder="Viết câu trả lời..."></textarea>`;
+                    container.appendChild(div);
+                });
+            } catch (e) {
+                console.error(e);
+                alert("Lỗi tải dữ liệu!");
+            }
+        }
+
+        // Các hàm xử lý Ảnh và Gửi thư giữ nguyên logic của bạn
+        function handlePreview(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('img-preview');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                document.getElementById('txt-prompt').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function sendLetter() {
+            const name = document.getElementById('guest-name').value.trim();
+            const emailValue = document.getElementById('sender-email').value.trim().toLowerCase();
+            const previewImg = document.getElementById('img-preview');
+            const textareas = document.querySelectorAll('.ans-field');
+            
+            if(!name) return alert("Vui lòng cho biết tên bạn!");
+
+            const answers = [];
+            textareas.forEach((el, i) => {
+                answers.push({ cau_hoi: customFields[i], cau_tra_loi: el.value });
+            });
+
+            document.getElementById('btn-send').innerText = "⏳ Đang gửi...";
+            document.getElementById('btn-send').disabled = true;
+
+            try {
+                await db.collection("letters").add({
+                    to_uid: ownerID,
+                    sender_name: name,
+                    sender_email: emailValue || "anonymous",
+                    sender_photo: previewImg.style.display !== 'none' ? previewImg.src : "", 
+                    content: answers,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Thư của bạn đã bay đến chủ nhà rồi! ❤️");
+                location.reload();
+            } catch (e) {
+                alert("Lỗi: " + e.message);
+                document.getElementById('btn-send').innerText = "📮 Gửi thư đi";
+                document.getElementById('btn-send').disabled = false;
+            }
+        }
+
+        loadTemplate();
+    </script>
+</body>
+</html>

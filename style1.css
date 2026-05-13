@@ -1,0 +1,194 @@
+/* 1. CÀI ĐẶT TỔNG THỂ (Nền và Chữ) */
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* 2. BỐ CỤC TRANG ĐĂNG NHẬP (Auth Wrapper) */
+.auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    padding: 20px;
+}
+
+.auth-main-content {
+    display: flex;
+    flex-direction: row; /* Sổ và Ảnh nằm ngang */
+    align-items: center;
+    gap: 30px;
+}
+
+/* Chữ tiêu đề viết tay */
+.welcome-text p, .footer-text p, h1 {
+    font-family: 'Dancing Script', cursive;
+    color: #2d5a27;
+    text-align: center;
+    margin: 0;
+}
+
+.welcome-text p { font-size: 2.5rem; }
+.footer-text p { font-size: 1.8rem; }
+
+/* 3. KHUNG CUỐN SỔ (Notebook) */
+.notebook {
+    background: #fff;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border-left: 15px solid #2d5a27; /* Gáy sổ xanh */
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* 4. CÁC Ô NHẬP LIỆU VÀ NÚT BẤM */
+input, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    outline: none;
+    font-family: inherit;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+    border-color: #2d5a27;
+}
+
+button {
+    background: #2d5a27;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    margin-right: 5px;
+}
+
+button:hover {
+    background: #397132;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(36, 70, 32, 0.3);
+}
+
+/* 5. GIAO DIỆN TRANG DASHBOARD (Sidebar + Content) */
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: #f0f4f9;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #f8fafd;
+    border-right: 1px solid #dfe1e5;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 25px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: #444746;
+    transition: 0.2s;
+}
+
+.menu-item:hover, .menu-item.active {
+    background-color: #e1eaf1;
+    color: #001d35;
+}
+
+.main-content {
+    flex: 1;
+    padding: 50px;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* 6. DANH SÁCH TIN NHẮN (Message Cards) */
+.message-card {
+    background: #fdfcf0; /* Màu giấy vintage */
+    border-bottom: 2px dashed #d1d1d1;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    border-radius: 8px;
+}
+
+.message-card::before {
+    content: "📌";
+    position: absolute;
+    top: -5px;
+    right: 10px;
+}
+
+/* 7. HIỆU ỨNG VÀ TIỆN ÍCH */
+.content-section {
+    display: none; /* Ẩn mặc định */
+    width: 100%;
+    max-width: 600px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 768px) {
+    .auth-main-content {
+        flex-direction: column;
+    }
+    .sidebar {
+        display: none; /* Có thể làm menu hamburger sau */
+    }
+}
+
+/* PREVIEW ZONE - Bo góc tròn */
+.preview-zone {
+    border-radius: 20px;
+    overflow: hidden;              /* Bắt buộc để clip góc */
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 4px 20px rgba(45,90,39,0.1);
+    display: flex;
+    margin-bottom: 25px;
+    min-height: 200px;
+    transition: all 0.4s ease;
+}
+
+.preview-zone::before {
+    content: '';
+    display: block;
+    width: 14px;
+    background: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.notebook-preview {
+    flex: 1;
+    padding: 28px 32px;
+}
